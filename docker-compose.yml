@@ -1,0 +1,43 @@
+# =====================================================================
+# Orquestación local: MLflow Tracking Server + API de inferencia.
+# Reproduce el snippet mostrado en la diapositiva "Containerización".
+# =====================================================================
+
+services:
+
+  # ---------- MLflow Tracking Server ----------
+  # Backend SQLite en volumen persistente para que el Model Registry
+  # sobreviva a reinicios. En producción se usaría Postgres + S3.
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.19.0
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow.db
+      --default-artifact-root /mlruns
+      --host 0.0.0.0
+      --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow.db
+      - mlflow_artifacts:/mlruns
+
+  # ---------- API de inferencia ----------
+  # El servicio espera al de MLflow y carga el modelo registrado en
+  # la etapa Production. Si no existe, el contenedor falla al arrancar.
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_NAME: breast-cancer-rf
+      MODEL_STAGE: Production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mlflow
+
+volumes:
+  mlflow_data:
+  mlflow_artifacts:

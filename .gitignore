@@ -1,0 +1,36 @@
+# =====================================================================
+# .gitignore del proyecto
+# =====================================================================
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# MLflow
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Datos generados (se versionan con DVC en un proyecto real)
+data/raw/*.parquet
+data/processed/*.parquet
+data/production/*.parquet
+
+# Reportes generados por Evidently
+reports/*.html
+
+# Capturas pendientes de tomar (las versionadas son las definitivas)
+# figs/*.png   # ← descomentar si se quieren mantener fuera del repo
+
+# Sistema
+.DS_Store
+.idea/
+.vscode/

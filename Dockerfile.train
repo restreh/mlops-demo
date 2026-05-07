@@ -1,0 +1,26 @@
+# =====================================================================
+# Imagen de ENTRENAMIENTO.
+# Incluye sklearn, MLflow y Evidently. Se usa para ejecutar train.py y
+# drift.py dentro de un contenedor reproducible.
+# =====================================================================
+
+FROM python:3.11-slim
+
+# Buenas prácticas: no escribir .pyc y forzar stdout/stderr sin buffer
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# Instalar dependencias antes que el código maximiza la cache de capas:
+# si el código cambia pero requirements no, no se reinstalan paquetes.
+COPY requirements-train.txt .
+RUN pip install --upgrade pip && pip install -r requirements-train.txt
+
+COPY src ./src
+COPY params.yaml ./params.yaml
+
+# Por defecto el contenedor entrena. Para correr otra cosa, sobrescribir
+# el comando: docker run ... python -m src.monitoring.drift
+CMD ["python", "-m", "src.models.train"]

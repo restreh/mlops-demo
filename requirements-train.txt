@@ -1,0 +1,22 @@
+# =====================================================================
+# Dependencias del pipeline de entrenamiento y monitoreo.
+# Se separan de las de serving para producir imágenes Docker más
+# pequeñas (la imagen de la API no necesita Evidently ni el dataset).
+# Versiones pinned para garantizar reproducibilidad.
+# =====================================================================
+
+# Núcleo: ML y manejo de datos
+scikit-learn==1.5.2
+pandas==2.2.3
+numpy==2.1.3
+pyarrow==18.0.0       # Backend para read_parquet / to_parquet
+PyYAML==6.0.2         # Lectura de params.yaml
+
+# Tracking y registro de modelos
+mlflow==2.19.0
+
+# Monitoreo de drift
+evidently==0.7.10
+
+# Utilidades
+joblib==1.4.2

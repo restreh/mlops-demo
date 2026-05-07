@@ -1,0 +1,35 @@
+# =====================================================================
+# Configuración externa del pipeline MLOps.
+# Toda la configuración del entrenamiento, monitoreo y serving se
+# centraliza aquí para evitar valores hard-coded en el código.
+# =====================================================================
+
+# --- Datos --------------------------------------------------------------
+data:
+  test_size: 0.2          # Proporción reservada para test
+  random_state: 42        # Semilla fija para reproducibilidad
+  reference_path: data/processed/reference.parquet
+  current_path:   data/production/last_24h.parquet
+
+# --- Entrenamiento ------------------------------------------------------
+# Hiperparámetros pasados directamente a RandomForestClassifier(**params)
+train:
+  n_estimators: 200
+  max_depth: 8
+  min_samples_split: 4
+  min_samples_leaf: 2
+  random_state: 42
+  n_jobs: -1
+
+# --- MLflow -------------------------------------------------------------
+mlflow:
+  tracking_uri: http://localhost:5000
+  experiment_name: breast-cancer-classification
+  registered_model_name: breast-cancer-rf
+  auc_threshold: 0.95     # Solo se registra el modelo si supera este AUC
+
+# --- Monitoreo de drift -------------------------------------------------
+monitoring:
+  method: psi             # PSI = Population Stability Index
+  drift_threshold: 0.2    # Por encima de este valor PSI indica drift
+  report_path: reports/drift_report.html

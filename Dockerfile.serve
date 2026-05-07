@@ -1,0 +1,25 @@
+# =====================================================================
+# Imagen de SERVING.
+# Solo trae lo necesario para correr la API. NO contiene el modelo:
+# se descarga del Model Registry al arrancar (ver lifespan en main.py).
+# =====================================================================
+
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY requirements-serve.txt .
+RUN pip install --upgrade pip && pip install -r requirements-serve.txt
+
+COPY src/api ./src/api
+COPY src/__init__.py ./src/__init__.py
+
+EXPOSE 8000
+
+# Uvicorn como servidor ASGI. --workers se deja en 1 para el demo;
+# en producción se ajustaría a (2 * cores) + 1 o se delegaría a gunicorn.
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,14 @@
+# =====================================================================
+# Dependencias de SERVING.
+# Solo lo indispensable para levantar la API y cargar el modelo desde
+# el Model Registry de MLflow. La imagen Docker resultante es mucho
+# más liviana que la de entrenamiento.
+# =====================================================================
+
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.2
+pandas==2.2.3
+numpy==2.1.3
+mlflow-skinny==2.19.0   # Cliente MLflow sin servidor ni UI
+scikit-learn==1.5.2     # Necesario para des-serializar el modelo registrado
