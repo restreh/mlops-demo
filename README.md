@@ -174,19 +174,6 @@ pytest -q
 
 ---
 
-## 7. Capturas necesarias para las diapositivas
-
-Dos diapositivas del PDF esperan capturas que solo existen tras ejecutar el código:
-
-| Diapositiva | Archivo esperado          | Cómo obtenerla                                                                                              |
-|-------------|---------------------------|-------------------------------------------------------------------------------------------------------------|
-| 23 — *MLflow Tracking UI*       | `figs/mlflow_ui.png`        | Después del paso **4.3**, abrir `http://localhost:5000`, capturar la lista de runs con métricas y parámetros. |
-| 27 — *Reporte de drift generado* | `figs/evidently_report.png` | Después del paso **4.6**, abrir `reports/drift_report.html`, capturar la sección con la tabla de features y los histogramas de drift. |
-
-Ambas capturas se colocan en `figs/` con esos nombres exactos. El bloque `\imgorhint` del archivo `slides_mlops.tex` las detecta automáticamente y reemplaza el placeholder por la imagen al recompilar.
-
----
-
 ## 8. Licencia
 
 Material académico. Uso libre con atribución.
