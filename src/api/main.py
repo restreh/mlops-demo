@@ -26,6 +26,21 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+# Nombres de las 30 features del dataset Breast Cancer, en el orden esperado
+# por el modelo. Se mantienen como constante para no depender de sklearn
+# en runtime.
+FEATURE_NAMES = [
+    "mean radius", "mean texture", "mean perimeter", "mean area",
+    "mean smoothness", "mean compactness", "mean concavity",
+    "mean concave points", "mean symmetry", "mean fractal dimension",
+    "radius error", "texture error", "perimeter error", "area error",
+    "smoothness error", "compactness error", "concavity error",
+    "concave points error", "symmetry error", "fractal dimension error",
+    "worst radius", "worst texture", "worst perimeter", "worst area",
+    "worst smoothness", "worst compactness", "worst concavity",
+    "worst concave points", "worst symmetry", "worst fractal dimension",
+]
+
 
 MODEL_URI = f"models:/{os.getenv('MODEL_NAME', 'breast-cancer-rf')}/{os.getenv('MODEL_STAGE', 'Production')}"
 
@@ -68,16 +83,8 @@ def health() -> dict:
 
 @app.post("/predict")
 def predict(p: Features) -> dict:
-    """Predicción batch.
-
-    Request body:
-        {"data": [[f1, f2, ..., f30], [f1, f2, ..., f30], ...]}
-
-    Response:
-        {"predictions": [0, 1, ...]}
-    """
     if model is None:
         raise HTTPException(status_code=503, detail="Modelo no cargado")
-    df = pd.DataFrame(p.data)
+    df = pd.DataFrame(p.data, columns=FEATURE_NAMES)
     preds = model.predict(df)
     return {"predictions": preds.tolist()}
