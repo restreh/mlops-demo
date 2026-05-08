@@ -56,22 +56,42 @@ mlops-demo/
 
 ## 3. Instalación
 
+### Linux / macOS (bash)
+
 ```bash
 git clone <URL-DEL-REPO>
 cd mlops-demo
 
 python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 
 pip install -r requirements-train.txt
+pip install -r requirements-serve.txt
 pip install -r requirements-dev.txt
 ```
+
+### Windows (PowerShell)
+
+```powershell
+git clone <URL-DEL-REPO>
+cd mlops-demo
+
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+pip install -r requirements-train.txt
+pip install -r requirements-serve.txt
+pip install -r requirements-dev.txt
+```
+
+> Si la activación falla con un error de *execution policy*, ejecutar una vez en la sesión:
+> `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
 
 ---
 
 ## 4. Ejecución end-to-end (modo local)
 
-Esta es la ruta recomendada para reproducir todo el ejemplo y obtener las capturas que faltan en las diapositivas.
+Esta es la ruta recomendada para reproducir todo el ejemplo y obtener las capturas que faltan en las diapositivas. Los pasos son los mismos en todos los sistemas operativos; solo cambia la sintaxis para activar la venv y para definir variables de entorno (paso 4.5).
 
 ### 4.1 Generar datos
 
@@ -84,14 +104,10 @@ Se crean `data/raw/breast_cancer.parquet`, `data/processed/reference.parquet` y 
 
 ### 4.2 Levantar MLflow Tracking Server
 
-En una terminal aparte:
+En una terminal aparte, dentro de la misma carpeta y con la venv activada:
 
 ```bash
-mlflow server \
-  --backend-store-uri sqlite:///mlflow.db \
-  --default-artifact-root ./mlruns \
-  --host 0.0.0.0 \
-  --port 5000
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 0.0.0.0 --port 5000
 ```
 
 > SQLite es indispensable: el Model Registry no funciona con el backend de archivos por defecto.
@@ -119,6 +135,10 @@ python scripts/promote_model.py
 
 ### 4.5 Levantar la API
 
+Las variables de entorno se definen distinto según el shell:
+
+**Linux / macOS (bash)**
+
 ```bash
 export MLFLOW_TRACKING_URI=http://localhost:5000
 export MODEL_NAME=breast-cancer-rf
@@ -127,11 +147,25 @@ export MODEL_STAGE=Production
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000
 ```
 
-Probar:
+**Windows (PowerShell)**
+
+```powershell
+$env:MLFLOW_TRACKING_URI = "http://localhost:5000"
+$env:MODEL_NAME = "breast-cancer-rf"
+$env:MODEL_STAGE = "Production"
+
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+```
+
+Probar en otra terminal:
 
 ```bash
 python scripts/smoke_test_api.py
-# o:
+```
+
+O con `curl`:
+
+```bash
 curl http://localhost:8000/health
 ```
 
@@ -145,7 +179,8 @@ Salida esperada:
 
 ```
 [drift] Reporte guardado en reports/drift_report.html
-[drift] Drift detectado: N test(s) en estado FAIL. ...
+[drift] Tests evaluados: 313 | en estado FAIL: 133
+[drift] Drift detectado. ...
 ```
 
 Abrir `reports/drift_report.html` en el navegador.
@@ -153,6 +188,8 @@ Abrir `reports/drift_report.html` en el navegador.
 ---
 
 ## 5. Ejecución con Docker Compose
+
+Independiente del sistema operativo:
 
 ```bash
 docker compose up --build
@@ -174,6 +211,6 @@ pytest -q
 
 ---
 
-## 8. Licencia
+## 7. Licencia
 
 Material académico. Uso libre con atribución.
